@@ -58,7 +58,8 @@ if __name__ == "__main__":
         coro_data.add_bst()
         coro_data.effective_bst()
 
-        print(coro_data.df.sort_values(by=["eBST"], ascending=False).head(10))
+        coro_data.df.to_csv("docs/coromon_stats.csv")
+        coro_data.df.to_markdown("docs/coromon_stats.md")
 
     else:
         print("Status Code: {}".format(response.status_code))
