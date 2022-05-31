@@ -34,7 +34,10 @@ class CoroData:
         the effective base stat total subtracts the lowest attacking stat, and
         can give a better idea of stat totals on non-mixed attackers.
         """
-        self.df["eBST"]
+        bst = self.df[stats].sum(axis=PD_AXIS_ROW)
+        min_atk = self.df[["Atk", "Sp.A"]].min(axis=PD_AXIS_ROW)
+
+        self.df["eBST"] = bst - min_atk
 
 
 if __name__ == "__main__":
@@ -53,8 +56,9 @@ if __name__ == "__main__":
         coro_data = CoroData(df, stats)
         coro_data.clean_data()
         coro_data.add_bst()
+        coro_data.effective_bst()
 
-        print(coro_data.df.sort_values(by=["BST"], ascending=False).head())
+        print(coro_data.df.sort_values(by=["eBST"], ascending=False).head(10))
 
     else:
         print("Status Code: {}".format(response.status_code))
