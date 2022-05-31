@@ -6,11 +6,19 @@ from bs4 import BeautifulSoup
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     # Drop unnessassary columns
-    df.drop(columns="Unnamed: 10", inplace=True)
+    df.drop(columns=["Unnamed: 10", "#"], inplace=True)
 
     # Remove garbage from fields
     for col in ["HP", "Spe", "Atk", "Def", "Sp.A", "Sp.D", "SP"]:
         df[col] = df[col].str.replace(r"[^0-9]+", "")
+        df[col] = pd.to_numeric(df[col])
+
+    return df
+
+
+def add_bst(df: pd.DataFrame) -> pd.DataFrame:
+
+    df["BST"] = df.apply(lambda x: df.sum())
 
     return df
 
