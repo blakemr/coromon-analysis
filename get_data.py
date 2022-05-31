@@ -17,8 +17,9 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def add_bst(df: pd.DataFrame) -> pd.DataFrame:
+    """Adds base stat totals to the dataframe."""
 
-    df["BST"] = df.apply(lambda x: df.sum())
+    df["BST"] = df.sum(axis=1)
 
     return df
 
@@ -35,8 +36,9 @@ if __name__ == "__main__":
         df = pd.DataFrame(df[0])
 
         df = clean_data(df)
+        df = add_bst(df)
 
-        print(df.dtypes)
+        print(df.head(10))
 
     else:
         print("Status Code: {}".format(response.status_code))
