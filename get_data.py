@@ -3,6 +3,9 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
+PD_AXIS_COLUMN = 0
+PD_AXIS_ROW = 1
+
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     # Drop unnessassary columns
@@ -19,7 +22,7 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 def add_bst(df: pd.DataFrame) -> pd.DataFrame:
     """Adds base stat totals to the dataframe."""
 
-    df["BST"] = df.sum(axis=1)
+    df["BST"] = df.sum(axis=PD_AXIS_ROW)
 
     return df
 
@@ -38,7 +41,7 @@ if __name__ == "__main__":
         df = clean_data(df)
         df = add_bst(df)
 
-        print(df.head(10))
+        print(df.head())
 
     else:
         print("Status Code: {}".format(response.status_code))
