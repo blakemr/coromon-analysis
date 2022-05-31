@@ -2,29 +2,39 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from dataclasses import dataclass
+from typing import List
 
 PD_AXIS_COLUMN = 0
 PD_AXIS_ROW = 1
 
 
-def clean_data(df: pd.DataFrame) -> pd.DataFrame:
-    # Drop unnessassary columns
-    df.drop(columns=["Unnamed: 10", "#"], inplace=True)
+@dataclass
+class CoroData:
+    df: pd.DataFrame
+    stats: List[str]
 
-    # Remove garbage from fields
-    for col in ["HP", "Spe", "Atk", "Def", "Sp.A", "Sp.D", "SP"]:
-        df[col] = df[col].str.replace(r"[^0-9]+", "")
-        df[col] = pd.to_numeric(df[col])
+    def clean_data(self):
+        # Drop unnessassary columns
+        self.df.drop(columns=["Unnamed: 10", "#"], inplace=True)
 
-    return df
+        # Remove garbage from fields
+        for col in self.stats:
+            self.df[col] = self.df[col].str.replace(r"[^0-9]+", "")
+            self.df[col] = pd.to_numeric(self.df[col])
 
+    def add_bst(self):
+        """Adds base stat total column."""
 
-def add_bst(df: pd.DataFrame) -> pd.DataFrame:
-    """Adds base stat totals to the dataframe."""
+        self.df["BST"] = self.df.sum(axis=PD_AXIS_ROW)
 
-    df["BST"] = df.sum(axis=PD_AXIS_ROW)
+    def effective_bst(self):
+        """Adds effective base stat total column.
 
-    return df
+        the effective base stat total subtracts the lowest attacking stat, and
+        can give a better idea of stat totals on non-mixed attackers.
+        """
+        self.df["eBST"]
 
 
 if __name__ == "__main__":
@@ -38,10 +48,13 @@ if __name__ == "__main__":
         df = pd.read_html(str(indiatable), header=[1])
         df = pd.DataFrame(df[0])
 
-        df = clean_data(df)
-        df = add_bst(df)
+        stats = ["HP", "Spe", "Atk", "Def", "Sp.A", "Sp.D", "SP"]
 
-        print(df.head())
+        coro_data = CoroData(df, stats)
+        coro_data.clean_data()
+        coro_data.add_bst()
+
+        print(coro_data.df.sort_values(by=["BST"], ascending=False).head())
 
     else:
         print("Status Code: {}".format(response.status_code))
