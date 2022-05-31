@@ -59,7 +59,6 @@ if __name__ == "__main__":
         coro_data.effective_bst()
 
         coro_data.df.to_csv("docs/coromon_stats.csv")
-        coro_data.df.to_markdown("docs/coromon_stats.md")
 
     else:
         print("Status Code: {}".format(response.status_code))
